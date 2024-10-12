@@ -2,6 +2,8 @@ package com.laminf.company.rest;
 
 import com.laminf.company.model.Company;
 import com.laminf.company.service.CompagnieService;
+import com.laminf.company.service.CompagnieServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,8 @@ public class CompanyApi {
 
     // TODO StateLess ----- Statefull (DB)
 
-    CompagnieService service = new CompagnieService();
+    @Autowired // Deleguer à Spring l'injection de ce composant
+    CompagnieService service;
 
     // TODO @RequestBody, @RequestHeader, @RequestParam
     @PostMapping
@@ -26,7 +29,7 @@ public class CompanyApi {
 
     @PutMapping("/loop")
     public void modifierCompagny(@RequestParam String ninea, @RequestParam String newSiege){
-        List<Company> compagnies = service.getCompagnies();
+        List<Company> compagnies = service.listCompagnies();
         for (Company comp:compagnies) {
             if (comp.getNinea().equalsIgnoreCase(ninea)){
                 comp.setSiege(newSiege);
@@ -35,13 +38,12 @@ public class CompanyApi {
     }
     @PutMapping("/stream")
     public void updateCompany(@RequestParam String ninea, @RequestParam String newSiege){
-        service.getCompagnies().stream().filter(company -> company.getNinea().equalsIgnoreCase(ninea))
-                .forEach(company -> company.setSiege(newSiege));
+        service.updateSiege(ninea,newSiege);
     }
 
     @GetMapping
     public List<Company> companyList(){
-        return service.getCompagnies();
+        return service.listCompagnies();
     }
 
 
